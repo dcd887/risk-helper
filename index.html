@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>风险小帮手 · 报关合规自查（离线规则引擎）</title>
+<meta name="description" content="离线海关报关合规自查：HS 编码、稽查风险、法规、归类决定检索。纯静态页面，无服务器、无 API Key、无大模型调用。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23a63a2a'/%3E%3Ctext x='16' y='23' font-size='18' text-anchor='middle' fill='%23f5f2ec' font-family='sans-serif'%3E%E5%85%B3%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="hd">
+  <div class="brand">
+    <div class="mark" aria-hidden="true">关</div>
+    <div class="brand-txt">
+      <h1>风险小帮手 · 报关合规自查</h1>
+      <p class="sub">离线规则引擎 · 无需联网 · 数据不出本机</p>
+    </div>
+  </div>
+</header>
+
+<p class="disclaimer" role="note">
+  <span class="dmark" aria-hidden="true">!</span>
+  本工具为关键词与规则匹配，不是大模型推理，结果仅供自查参考，不替代海关正式认定
+</p>
+
+<nav class="tabs" role="tablist" aria-label="查询功能">
+  <button class="tab is-on" role="tab" id="tab-hs" aria-selected="true" aria-controls="panel-hs" data-tab="hs">HS 编码查询</button>
+  <button class="tab" role="tab" id="tab-risk" aria-selected="false" aria-controls="panel-risk" data-tab="risk">稽查风险自查</button>
+  <button class="tab" role="tab" id="tab-regs" aria-selected="false" aria-controls="panel-regs" data-tab="regs">法规检索</button>
+  <button class="tab" role="tab" id="tab-dec" aria-selected="false" aria-controls="panel-dec" data-tab="dec">归类决定</button>
+</nav>
+
+<main>
+
+  <!-- ============ HS 编码 ============ -->
+  <section class="panel is-on" id="panel-hs" role="tabpanel" aria-labelledby="tab-hs">
+    <div class="searchbar">
+      <input id="q-hs" type="search" autocomplete="off" spellcheck="false"
+             placeholder="输入品名关键词或编码，如：冻鸡爪 / 蚕蛹 / 0207">
+      <button class="btn" id="btn-hs" type="button">查询</button>
+    </div>
+    <div class="chips" data-for="hs">
+      <span class="chips-label">试试</span>
+      <button class="chip" type="button">冻鸡爪</button>
+      <button class="chip" type="button">蚕蛹</button>
+      <button class="chip" type="button">锂电池</button>
+      <button class="chip" type="button">化妆品</button>
+      <button class="chip" type="button">0207</button>
+    </div>
+    <div class="meta-line" id="meta-hs"></div>
+    <div id="out-hs" class="out" aria-live="polite"></div>
+  </section>
+
+  <!-- ============ 稽查风险 ============ -->
+  <section class="panel" id="panel-risk" role="tabpanel" aria-labelledby="tab-risk" hidden>
+    <div class="field">
+      <label for="q-risk">报关要素（品名 / 材质 / 用途 / 加工方式 / 贸易方式，可多行）</label>
+      <textarea id="q-risk" rows="3" spellcheck="false"
+                placeholder="例：品名 锂电池 组；材质 锂离子电芯+塑料外壳；用途 储能电源；贸易方式 一般贸易；原产地 韩国"></textarea>
+    </div>
+    <div class="row-end"><button class="btn" id="btn-risk" type="button">扫描风险（回车）</button></div>
+    <div class="chips" data-for="risk">
+      <span class="chips-label">试试</span>
+      <button class="chip" type="button">锂电池</button>
+      <button class="chip" type="button">化妆品</button>
+      <button class="chip" type="button">加工贸易 保税 单耗</button>
+      <button class="chip" type="button">减免税设备 监管年限</button>
+      <button class="chip" type="button">特许权使用费 关联公司</button>
+    </div>
+    <div class="meta-line" id="meta-risk"></div>
+    <div id="out-risk" class="out" aria-live="polite"></div>
+  </section>
+
+  <!-- ============ 法规 ============ -->
+  <section class="panel" id="panel-regs" role="tabpanel" aria-labelledby="tab-regs" hidden>
+    <div class="searchbar">
+      <input id="q-regs" type="search" autocomplete="off" spellcheck="false"
+             placeholder="输入法规关键词，如：稽查 / 归类 / 原产地 / 主动披露">
+      <button class="btn" id="btn-regs" type="button">检索</button>
+    </div>
+    <div class="chips" data-for="regs">
+      <span class="chips-label">试试</span>
+      <button class="chip" type="button">稽查</button>
+      <button class="chip" type="button">归类</button>
+      <button class="chip" type="button">原产地</button>
+      <button class="chip" type="button">主动披露</button>
+      <button class="chip" type="button">计税价格</button>
+    </div>
+    <div class="meta-line" id="meta-regs"></div>
+    <div id="out-regs" class="out" aria-live="polite"></div>
+  </section>
+
+  <!-- ============ 归类决定 ============ -->
+  <section class="panel" id="panel-dec" role="tabpanel" aria-labelledby="tab-dec" hidden>
+    <div class="searchbar">
+      <input id="q-dec" type="search" autocomplete="off" spellcheck="false"
+             placeholder="输入品名或税号，如：冻煮蚕蛹 / 冻鸡爪 / 8507">
+      <button class="btn" id="btn-dec" type="button">检索</button>
+    </div>
+    <div class="chips" data-for="dec">
+      <span class="chips-label">试试</span>
+      <button class="chip" type="button">冻煮蚕蛹</button>
+      <button class="chip" type="button">锂电池</button>
+      <button class="chip" type="button">化妆品</button>
+      <button class="chip" type="button">8507</button>
+    </div>
+    <div class="meta-line" id="meta-dec"></div>
+    <div id="out-dec" class="out" aria-live="polite"></div>
+  </section>
+
+</main>
+
+<footer class="ft">
+  <div class="ft-grid" id="ft-stats"></div>
+  <p class="ft-note">
+    数据来自公开税则与海关总署公开文件（2026 年进出口税则 8972 条、38 条风险规则 / 7 维度、19 部法规、1956 条商品归类决定、26 条归类边界规则）。
+    页面为纯静态文件，不发送任何网络请求，不上传输入内容，不含 API Key。
+  </p>
+  <p class="ft-note ft-dim">全部匹配在浏览器本地完成：编码前缀 / 品名关键词 / 规则权重打分。结果可追溯到具体法规条款或归类决定编号。</p>
+</footer>
+
+<!-- 首屏只需 HS 数据；其余 defer / 按需注入 -->
+<script src="data/hs.js"></script>
+<script defer src="data/risk.js"></script>
+<script defer src="data/regs.js"></script>
+<script defer src="data/boundary.js"></script>
+<script defer src="data/meta.js"></script>
+<script defer src="assets/app.js"></script>
+</body>
+</html>
